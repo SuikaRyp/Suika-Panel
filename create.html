@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="id" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productyl cPanel - Create Server</title>
+    <title>Productyl cPanel - Buat Server</title>
     
     <!-- Bootstrap 5 Dark -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
@@ -85,7 +85,7 @@
             
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="index.html">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    <i class="fas fa-arrow-left me-1"></i> Kembali ke Dashboard
                 </a>
             </div>
         </div>
@@ -99,12 +99,12 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="text-center">
                         <div class="step-number bg-primary text-white">1</div>
-                        <div class="mt-2 fw-bold">Select Package</div>
+                        <div class="mt-2 fw-bold">Pilih Paket</div>
                     </div>
                     <div class="flex-grow-1 mx-3" style="height: 2px; background: var(--primary);"></div>
                     <div class="text-center">
                         <div class="step-number bg-primary text-white">2</div>
-                        <div class="mt-2 fw-bold">Configure</div>
+                        <div class="mt-2 fw-bold">Konfigurasi</div>
                     </div>
                     <div class="flex-grow-1 mx-3" style="height: 2px; background: var(--primary);"></div>
                     <div class="text-center">
@@ -119,11 +119,11 @@
         <div class="row justify-content-center mb-5">
             <div class="col-lg-10">
                 <h3 class="mb-4">
-                    <i class="fas fa-boxes me-2"></i>Select RAM Package
+                    <i class="fas fa-boxes me-2"></i>Pilih Paket RAM
                 </h3>
                 
                 <div class="row g-3" id="packagesContainer">
-                    <!-- Packages will be loaded by JavaScript -->
+                    <!-- Packages akan dimuat oleh JavaScript -->
                 </div>
             </div>
         </div>
@@ -134,7 +134,7 @@
                 <div class="card">
                     <div class="card-body p-4">
                         <h4 class="mb-4">
-                            <i class="fas fa-sliders-h me-2"></i>Server Configuration
+                            <i class="fas fa-sliders-h me-2"></i>Konfigurasi Server
                         </h4>
                         
                         <form id="serverForm">
@@ -142,29 +142,29 @@
                                 <!-- Server Name -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">
-                                        <i class="fas fa-server me-1"></i> Server Name
+                                        <i class="fas fa-server me-1"></i> Nama Server
                                     </label>
                                     <input type="text" class="form-control" 
                                            id="serverName" 
-                                           placeholder="my-awesome-server" 
+                                           placeholder="server-keren-saya" 
                                            required>
-                                    <small class="text-muted">Only letters, numbers, and dashes</small>
+                                    <small class="text-muted">Hanya huruf, angka, dan strip</small>
                                 </div>
                                 
                                 <!-- RAM Selection -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">
-                                        <i class="fas fa-memory me-1"></i> RAM Allocation
+                                        <i class="fas fa-memory me-1"></i> Alokasi RAM
                                     </label>
                                     <select class="form-select" id="ramSelect" required>
-                                        <option value="1024">1 GB - Free Plan</option>
-                                        <option value="2048">2 GB - Free Plan</option>
-                                        <option value="4096">4 GB - Free Plan</option>
-                                        <option value="6144">6 GB - Free Plan</option>
-                                        <option value="8192">8 GB - Free Plan</option>
-                                        <option value="10240">10 GB - Free Plan</option>
+                                        <option value="1024">1 GB - Paket Gratis</option>
+                                        <option value="2048">2 GB - Paket Gratis</option>
+                                        <option value="4096">4 GB - Paket Gratis</option>
+                                        <option value="6144">6 GB - Paket Gratis</option>
+                                        <option value="8192">8 GB - Paket Gratis</option>
+                                        <option value="10240">10 GB - Paket Gratis</option>
                                         <option value="0" id="unlimitedOption" class="text-warning">
-                                            UNLIMITED - Admin Plan
+                                            TANPA BATAS - Paket Admin
                                         </option>
                                     </select>
                                 </div>
@@ -172,10 +172,10 @@
                                 <!-- Server Type -->
                                 <div class="col-12">
                                     <label class="form-label fw-bold mb-3">
-                                        <i class="fas fa-egg me-1"></i> Server Type
+                                        <i class="fas fa-egg me-1"></i> Tipe Server
                                     </label>
                                     <div class="row g-2" id="eggsContainer">
-                                        <!-- Eggs will be loaded by JavaScript -->
+                                        <!-- Eggs akan dimuat oleh JavaScript -->
                                     </div>
                                 </div>
                                 
@@ -184,38 +184,38 @@
                                     <div class="card bg-dark border-success">
                                         <div class="card-body">
                                             <h5 class="mb-3">
-                                                <i class="fas fa-check-circle text-success me-2"></i>Included Features
+                                                <i class="fas fa-check-circle text-success me-2"></i>Fitur yang Disertakan
                                             </h5>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <ul class="list-unstyled">
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> Full Root Access
+                                                            <i class="fas fa-check text-success me-2"></i> Akses Root Penuh
                                                         </li>
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> 24/7 Uptime Monitoring
+                                                            <i class="fas fa-check text-success me-2"></i> Monitoring 24/7
                                                         </li>
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> DDoS Protection
+                                                            <i class="fas fa-check text-success me-2"></i> Perlindungan DDoS
                                                         </li>
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> Completely FREE
+                                                            <i class="fas fa-check text-success me-2"></i> Sepenuhnya GRATIS
                                                         </li>
                                                     </ul>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <ul class="list-unstyled">
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> Instant Setup
+                                                            <i class="fas fa-check text-success me-2"></i> Setup Instan
                                                         </li>
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> Daily Backups
+                                                            <i class="fas fa-check text-success me-2"></i> Backup Harian
                                                         </li>
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> 99.9% SLA
+                                                            <i class="fas fa-check text-success me-2"></i> SLA 99.9%
                                                         </li>
                                                         <li class="mb-2">
-                                                            <i class="fas fa-check text-success me-2"></i> No Hidden Fees
+                                                            <i class="fas fa-check text-success me-2"></i> Tidak Ada Biaya Tersembunyi
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -228,10 +228,10 @@
                                 <div class="col-12 mt-4">
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary btn-lg py-3">
-                                            <i class="fas fa-rocket me-2"></i>CREATE FREE SERVER
+                                            <i class="fas fa-rocket me-2"></i>BUAT SERVER GRATIS
                                         </button>
                                         <small class="text-center text-muted mt-2">
-                                            <i class="fas fa-bolt me-1"></i>Server will be ready in 30-60 seconds
+                                            <i class="fas fa-bolt me-1"></i>Server akan siap dalam 30-60 detik
                                         </small>
                                     </div>
                                 </div>
@@ -244,13 +244,13 @@
                 <div class="card mt-4">
                     <div class="card-body">
                         <h5>
-                            <i class="fas fa-chart-bar me-2"></i>Your Current Usage
+                            <i class="fas fa-chart-bar me-2"></i>Penggunaan Anda Saat Ini
                         </h5>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between mb-1">
-                                        <span>RAM Usage</span>
+                                        <span>Penggunaan RAM</span>
                                         <span id="currentRamUsage">0MB / 0MB</span>
                                     </div>
                                     <div class="progress" style="height: 10px;">
@@ -261,12 +261,12 @@
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h6>Available RAM</h6>
+                                        <h6>RAM Tersedia</h6>
                                         <h3 id="availableRam" class="text-success">0MB</h3>
                                     </div>
                                     <div>
-                                        <h6>Can Create</h6>
-                                        <h3 id="canCreateServers" class="text-primary">0 more</h3>
+                                        <h6>Bisa Buat</h6>
+                                        <h3 id="canCreateServers" class="text-primary">0 lagi</h3>
                                     </div>
                                 </div>
                             </div>
@@ -293,7 +293,7 @@
             { id: 4, name: 'Advanced 6GB', ram: 6144, max_servers: 5 },
             { id: 5, name: 'Pro 8GB', ram: 8192, max_servers: 8 },
             { id: 6, name: 'Enterprise 10GB', ram: 10240, max_servers: 10 },
-            { id: 7, name: 'UNLIMITED', ram: 0, max_servers: 999, unlimited: true }
+            { id: 7, name: 'TANPA BATAS', ram: 0, max_servers: 999, unlimited: true }
         ];
         
         const SERVER_EGGS = [
@@ -302,7 +302,7 @@
             { id: 3, name: 'Python', icon: 'fab fa-python', color: 'text-info' },
             { id: 4, name: 'PHP Web', icon: 'fab fa-php', color: 'text-primary' },
             { id: 5, name: 'CS:GO', icon: 'fas fa-gamepad', color: 'text-danger' },
-            { id: 6, name: 'Discord Bot', icon: 'fab fa-discord', color: 'text-info' },
+            { id: 6, name: 'Bot Discord', icon: 'fab fa-discord', color: 'text-info' },
             { id: 7, name: 'WordPress', icon: 'fab fa-wordpress', color: 'text-primary' },
             { id: 8, name: 'MySQL', icon: 'fas fa-database', color: 'text-warning' }
         ];
@@ -311,7 +311,7 @@
         let selectedEgg = 1;
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Check login
+            // Cek login
             if (!isLoggedIn()) {
                 window.location.href = 'login.html';
                 return;
@@ -342,7 +342,7 @@
             const isAdmin = user?.is_admin || false;
             
             container.innerHTML = RAM_PACKAGES
-                .filter(pkg => pkg.id !== 7 || isAdmin) // Hide unlimited for non-admins
+                .filter(pkg => pkg.id !== 7 || isAdmin) // Sembunyikan unlimited untuk non-admin
                 .map(pkg => `
                     <div class="col-md-4">
                         <div class="card package-card h-100 ${pkg.id === 7 ? 'border-warning' : ''}"
@@ -358,18 +358,18 @@
                                 <h4 class="mb-3">${pkg.name}</h4>
                                 <h2 class="mb-3">
                                     ${pkg.unlimited ? 
-                                        '<span class="text-warning">UNLIMITED</span>' : 
+                                        '<span class="text-warning">TANPA BATAS</span>' : 
                                         `${pkg.ram / 1024} GB`
                                     }
                                 </h2>
                                 <div class="mb-3">
-                                    <span class="badge badge-free">FREE</span>
-                                    <span class="badge bg-success ms-1">${pkg.max_servers} Servers</span>
+                                    <span class="badge badge-free">GRATIS</span>
+                                    <span class="badge bg-success ms-1">${pkg.max_servers} Server</span>
                                 </div>
                                 <small class="text-muted">
                                     ${pkg.unlimited ? 
-                                        'Unlimited resources for administrators' : 
-                                        `Completely free ${pkg.ram / 1024}GB plan`
+                                        'Resources tanpa batas untuk administrator' : 
+                                        `Paket ${pkg.ram / 1024}GB sepenuhnya gratis`
                                     }
                                 </small>
                             </div>
@@ -377,7 +377,7 @@
                     </div>
                 `).join('');
             
-            // Select first package by default
+            // Pilih paket pertama secara default
             selectPackage(isAdmin ? 1 : 1);
         }
         
@@ -392,13 +392,13 @@
                         <div class="card-body text-center p-3">
                             <i class="${egg.icon} fa-2x mb-3 ${egg.color}"></i>
                             <h6>${egg.name}</h6>
-                            <small class="text-success">FREE</small>
+                            <small class="text-success">GRATIS</small>
                         </div>
                     </div>
                 </div>
             `).join('');
             
-            // Select first egg by default
+            // Pilih egg pertama secara default
             selectEgg(1);
         }
         
@@ -438,16 +438,16 @@
             // Update RAM usage
             const ramPercentage = ramLimit > 0 ? Math.min(100, (ramUsed / ramLimit) * 100) : 0;
             document.getElementById('currentRamUsage').textContent = 
-                `${ramUsed}MB / ${ramLimit === 0 ? 'Unlimited' : ramLimit + 'MB'}`;
+                `${ramUsed}MB / ${ramLimit === 0 ? 'Tanpa Batas' : ramLimit + 'MB'}`;
             document.getElementById('ramProgressBar').style.width = `${ramPercentage}%`;
             
             // Update available RAM
-            const availableRam = ramLimit === 0 ? 'Unlimited' : (ramLimit - ramUsed) + 'MB';
+            const availableRam = ramLimit === 0 ? 'Tanpa Batas' : (ramLimit - ramUsed) + 'MB';
             document.getElementById('availableRam').textContent = availableRam;
             
             // Update server count
             const canCreate = Math.max(0, maxServers - servers.length);
-            document.getElementById('canCreateServers').textContent = `${canCreate} more`;
+            document.getElementById('canCreateServers').textContent = `${canCreate} lagi`;
         }
         
         function updateUnlimitedOption() {
@@ -458,7 +458,7 @@
                 unlimitedOption.style.display = 'block';
             } else {
                 unlimitedOption.style.display = 'none';
-                // If unlimited is selected but user is not admin, select 1GB
+                // Jika unlimited dipilih tapi user bukan admin, pilih 1GB
                 if (document.getElementById('ramSelect').value === '0') {
                     document.getElementById('ramSelect').value = '1024';
                 }
@@ -468,7 +468,7 @@
         function createServer() {
             const user = getCurrentUser();
             if (!user) {
-                alert('Please login first!');
+                alert('Silakan login terlebih dahulu!');
                 window.location.href = 'login.html';
                 return;
             }
@@ -477,48 +477,48 @@
             const ram = parseInt(document.getElementById('ramSelect').value);
             
             if (!serverName) {
-                alert('Please enter a server name!');
+                alert('Silakan masukkan nama server!');
                 return;
             }
             
-            // Check RAM limit (unless unlimited)
+            // Cek batas RAM (kecuali tanpa batas)
             if (user.ram_limit > 0) {
                 const servers = getUserServers();
                 const ramUsed = servers.reduce((sum, server) => sum + server.memory, 0);
                 
                 if (ramUsed + ram > user.ram_limit) {
-                    alert(`RAM limit exceeded! Available: ${user.ram_limit - ramUsed}MB, Needed: ${ram}MB`);
+                    alert(`Batas RAM terlampaui! Tersedia: ${user.ram_limit - ramUsed}MB, Dibutuhkan: ${ram}MB`);
                     return;
                 }
             }
             
-            // Check server count limit
+            // Cek batas jumlah server
             const servers = getUserServers();
             const maxServers = user.max_servers || 1;
             if (servers.length >= maxServers) {
-                alert(`Maximum server limit reached (${maxServers} servers)!`);
+                alert(`Batas maksimum server tercapai (${maxServers} server)!`);
                 return;
             }
             
-            // Create server object
+            // Buat objek server
             const newServer = {
                 id: Date.now(),
                 name: serverName,
                 egg_id: selectedEgg,
                 memory: ram,
-                disk: ram * 10, // 10x RAM for disk
+                disk: ram * 10, // 10x RAM untuk disk
                 status: 'creating',
                 created_at: new Date().toISOString(),
                 node: 'node-1'
             };
             
-            // Add to localStorage
+            // Tambah ke localStorage
             addUserServer(newServer);
             
-            // Show success message
-            alert(`Free server "${serverName}" is being created! Redirecting to dashboard...`);
+            // Tampilkan pesan sukses
+            alert(`Server gratis "${serverName}" sedang dibuat! Mengalihkan ke dashboard...`);
             
-            // Redirect to dashboard
+            // Redirect ke dashboard
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 1500);
