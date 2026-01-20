@@ -1,61 +1,982 @@
-<!-- Update bagian login form di login.html -->
-<form id="loginForm">
-    <div class="mb-3">
-        <label class="form-label">
-            <i class="fas fa-envelope me-1"></i> Email Address
-        </label>
-        <input type="email" class="form-control form-control-lg" 
-               id="email" required placeholder="admin@productyl.local">
-    </div>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Productyl cPanel</title>
     
-    <div class="mb-4">
-        <label class="form-label">
-            <i class="fas fa-lock me-1"></i> Password
-        </label>
-        <input type="password" class="form-control form-control-lg" 
-               id="password" required placeholder="••••••••">
-    </div>
+    <!-- Bootstrap 5 Dark -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     
-    <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-primary btn-lg">
-            <i class="fas fa-sign-in-alt me-2"></i> Sign In
-        </button>
-    </div>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <div class="text-center">
-        <a href="#" class="text-decoration-none" onclick="useAdminAccount()">
-            Use Admin Account
-        </a>
-    </div>
-</form>
-
-<script>
-// Update fungsi login di login.html
-async function useAdminAccount() {
-    document.getElementById('email').value = 'admin@productyl.local';
-    document.getElementById('password').value = 'admin123';
-}
-
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    const user = await loginUser(email, password);
-    
-    if (user) {
-        // Save to localStorage (without password)
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        
-        // Redirect based on role
-        if (user.is_admin) {
-            window.location.href = 'admin/index.html';
-        } else {
-            window.location.href = 'index.html';
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --dark: #0f0f23;
+            --darker: #0a0a1a;
+            --accent: #00ff9d;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary), #00ff9d);
         }
-    } else {
-        alert('Invalid email or password!');
-    }
-});
-</script>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(45deg, 
+                rgba(15, 15, 35, 0.95) 0%,
+                rgba(10, 10, 26, 0.98) 100%);
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--gradient);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px) rotate(360deg); opacity: 0; }
+        }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                        0 0 100px rgba(78, 84, 200, 0.1);
+        }
+        
+        .glass-light {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Login Section */
+        .login-section {
+            display: flex;
+            min-height: 85vh;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Left Panel - Login Form */
+        .login-left {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(78, 84, 200, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-icon {
+            font-size: 40px;
+            color: white;
+        }
+        
+        .brand-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .brand-subtitle {
+            color: #8a8aa3;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        
+        /* Form Styling */
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0c0;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8a8aa3;
+            font-size: 1.2rem;
+        }
+        
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(78, 84, 200, 0.4);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        
+        .login-btn:hover::after {
+            left: 100%;
+        }
+        
+        /* Admin Quick Login */
+        .admin-quick {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .admin-btn {
+            background: transparent;
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .admin-btn:hover {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: #ffc107;
+            transform: translateY(-1px);
+        }
+        
+        /* Right Panel - Features */
+        .login-right {
+            flex: 1.2;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-right::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(78, 84, 200, 0.1), rgba(0, 255, 157, 0.05));
+            z-index: -1;
+        }
+        
+        .features-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            padding: 25px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .feature-desc {
+            color: #8a8aa3;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Packages Display */
+        .packages-section {
+            margin-top: 30px;
+        }
+        
+        .packages-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .package-badge {
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        
+        .package-badge:hover {
+            transform: translateY(-3px);
+        }
+        
+        .package-1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .package-2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .package-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .package-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .package-5 { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .package-6 { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
+        .package-7 { 
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #ff9a9e);
+            background-size: 400% 400%;
+            animation: gradientShift 3s ease infinite;
+            color: #333;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8a8aa3;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .login-section {
+                flex-direction: column;
+            }
+            
+            .login-left, .login-right {
+                padding: 40px;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .packages-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 10px;
+            }
+            
+            .login-left, .login-right {
+                padding: 30px 20px;
+            }
+            
+            .brand-title {
+                font-size: 2.2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .packages-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+        }
+        
+        /* Glow Effects */
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .glow-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: -150px;
+            right: -150px;
+        }
+        
+        .glow-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent);
+            bottom: -100px;
+            left: -100px;
+        }
+        
+        /* Floating Animation */
+        .float-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Alert Styling */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.2), rgba(220, 53, 69, 0.1));
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #ff6b6b;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.2), rgba(25, 135, 84, 0.1));
+            border: 1px solid rgba(25, 135, 84, 0.3);
+            color: #51cf66;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+    
+    <!-- Glow Effects -->
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="login-section glass float-animation">
+            <!-- Left Panel - Login Form -->
+            <div class="login-left">
+                <!-- Logo & Brand -->
+                <div class="logo-container">
+                    <div class="logo">
+                        <i class="fas fa-server logo-icon"></i>
+                    </div>
+                    <h1 class="brand-title animate__animated animate__fadeInDown">Productyl cPanel</h1>
+                    <p class="brand-subtitle animate__animated animate__fadeInDown animate__delay-1s">
+                        Enterprise Server Management
+                    </p>
+                </div>
+
+                <!-- Login Form -->
+                <form class="login-form" id="loginForm">
+                    <!-- Alert Messages -->
+                    <div id="alertContainer"></div>
+
+                    <!-- Email Input -->
+                    <div class="form-group animate__animated animate__fadeInLeft animate__delay-2s">
+                        <label class="form-label">
+                            <i class="fas fa-envelope me-2"></i> Email Address
+                        </label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" 
+                                   id="email" 
+                                   placeholder="admin@productyl.local"
+                                   required>
+                            <span class="input-icon">
+                                <i class="fas fa-at"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-group animate__animated animate__fadeInLeft animate__delay-3s">
+                        <label class="form-label">
+                            <i class="fas fa-lock me-2"></i> Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" 
+                                   id="password" 
+                                   placeholder="••••••••"
+                                   required>
+                            <span class="input-icon">
+                                <i class="fas fa-key"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Login Button -->
+                    <div class="form-group animate__animated animate__fadeInUp animate__delay-4s">
+                        <button type="submit" class="login-btn" id="loginButton">
+                            <span id="buttonText">Sign In</span>
+                            <span id="buttonSpinner" class="spinner" style="display: none;"></span>
+                        </button>
+                    </div>
+
+                    <!-- Admin Quick Login -->
+                    <div class="admin-quick animate__animated animate__fadeInUp animate__delay-5s">
+                        <button type="button" class="admin-btn" onclick="useAdminAccount()">
+                            <i class="fas fa-crown me-2"></i> Admin Login
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Footer Note -->
+                <div class="login-footer animate__animated animate__fadeIn animate__delay-6s">
+                    <p>
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Secure authentication system. Contact administrator for access.
+                    </p>
+                    <small class="text-muted">
+                        &copy; 2024 Productyl cPanel. All rights reserved.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Right Panel - Features -->
+            <div class="login-right">
+                <h2 class="features-title animate__animated animate__fadeInRight">
+                    <i class="fas fa-bolt me-2"></i>Powerful Features
+                </h2>
+
+                <!-- Features Grid -->
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-card glass-light animate__animated animate__fadeInRight animate__delay-1s">
+                        <div class="feature-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="feature-title">1-Click Deployment</h3>
+                        <p class="feature-desc">
+                            Launch servers instantly with pre-configured templates.
+                            Perfect for development and production.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="feature-card glass-light animate__animated animate__fadeInRight animate__delay-2s">
+                        <div class="feature-icon">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <h3 class="feature-title">Unlimited Scaling</h3>
+                        <p class="feature-desc">
+                            From 1GB to unlimited RAM. Scale your resources
+                            based on your application needs.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="feature-card glass-light animate__animated animate__fadeInRight animate__delay-3s">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Enterprise Security</h3>
+                        <p class="feature-desc">
+                            DDoS protection, firewall, and encrypted backups.
+                            Your data is always secure.
+                        </p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="feature-card glass-light animate__animated animate__fadeInRight animate__delay-4s">
+                        <div class="feature-icon">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <h3 class="feature-title">Full Control</h3>
+                        <p class="feature-desc">
+                            Complete root access, custom configurations,
+                            and detailed analytics for optimization.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- RAM Packages -->
+                <div class="packages-section animate__animated animate__fadeInUp animate__delay-5s">
+                    <h3 class="packages-title">
+                        <i class="fas fa-boxes me-2"></i> Available RAM Packages
+                    </h3>
+                    <div class="packages-grid">
+                        <div class="package-badge package-1">1 GB</div>
+                        <div class="package-badge package-2">2 GB</div>
+                        <div class="package-badge package-3">4 GB</div>
+                        <div class="package-badge package-4">6 GB</div>
+                        <div class="package-badge package-5">8 GB</div>
+                        <div class="package-badge package-6">10 GB</div>
+                        <div class="package-badge package-7">UNLIMITED</div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="row mt-4 animate__animated animate__fadeInUp animate__delay-6s">
+                    <div class="col-4 text-center">
+                        <h3 class="text-primary mb-1">99.9%</h3>
+                        <small class="text-muted">Uptime</small>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h3 class="text-success mb-1">24/7</h3>
+                        <small class="text-muted">Support</small>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h3 class="text-warning mb-1">Instant</h3>
+                        <small class="text-muted">Setup</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- App JS -->
+    <script src="assets/js/encryption.js"></script>
+    <script src="assets/js/auth.js"></script>
+    
+    <script>
+        // Initialize particles
+        function initParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random size
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                
+                // Random animation delay and duration
+                const delay = Math.random() * 20;
+                const duration = Math.random() * 10 + 20;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // Random opacity
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // Show alert message
+        function showAlert(message, type = 'danger') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close btn-close-white float-end" onclick="this.parentElement.remove()"></button>
+            `;
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        // Show loading state
+        function showLoading(show) {
+            const button = document.getElementById('loginButton');
+            const text = document.getElementById('buttonText');
+            const spinner = document.getElementById('buttonSpinner');
+            
+            if (show) {
+                button.disabled = true;
+                text.textContent = 'Signing In...';
+                spinner.style.display = 'inline-block';
+                button.style.opacity = '0.8';
+            } else {
+                button.disabled = false;
+                text.textContent = 'Sign In';
+                spinner.style.display = 'none';
+                button.style.opacity = '1';
+            }
+        }
+        
+        // Use admin account
+        function useAdminAccount() {
+            document.getElementById('email').value = 'admin@productyl.local';
+            document.getElementById('password').value = 'admin123';
+            document.getElementById('email').focus();
+            
+            // Add animation
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.classList.add('animate__animated', 'animate__pulse');
+                setTimeout(() => {
+                    input.classList.remove('animate__animated', 'animate__pulse');
+                }, 1000);
+            });
+            
+            showAlert('Admin credentials loaded. Click Sign In to continue.', 'success');
+        }
+        
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize particles
+            initParticles();
+            
+            // Check if already logged in
+            if (isLoggedIn()) {
+                const user = getCurrentUser();
+                if (user.is_admin) {
+                    window.location.href = 'admin/index.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+            
+            // Add input animations
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('animate__animated', 'animate__pulse');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('animate__animated', 'animate__pulse');
+                });
+            });
+            
+            // Handle login form
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                if (!email || !password) {
+                    showAlert('Please fill in all fields');
+                    return;
+                }
+                
+                // Show loading
+                showLoading(true);
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                try {
+                    const user = await loginUser(email, password);
+                    
+                    if (user) {
+                        // Save to localStorage (without password)
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        
+                        // Show success message
+                        showAlert(`Welcome back, ${user.username}! Redirecting...`, 'success');
+                        
+                        // Add success animation
+                        document.querySelector('.login-left').classList.add('animate__animated', 'animate__fadeOut');
+                        
+                        // Redirect based on role
+                        setTimeout(() => {
+                            if (user.is_admin) {
+                                window.location.href = 'admin/index.html';
+                            } else {
+                                window.location.href = 'index.html';
+                            }
+                        }, 1500);
+                    } else {
+                        showAlert('Invalid email or password. Use admin@productyl.local / admin123 for demo.');
+                        showLoading(false);
+                    }
+                } catch (error) {
+                    showAlert('Login failed. Please try again.');
+                    showLoading(false);
+                }
+            });
+            
+            // Add hover effects to feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl + A for admin login
+                if (e.ctrlKey && e.key === 'a') {
+                    e.preventDefault();
+                    useAdminAccount();
+                }
+                
+                // Enter key focuses next input
+                if (e.key === 'Enter' && e.target.type !== 'submit') {
+                    const form = e.target.form;
+                    const index = Array.prototype.indexOf.call(form, e.target);
+                    form.elements[index + 1]?.focus();
+                }
+            });
+            
+            // Add floating animation to particles on hover
+            document.querySelector('.login-section').addEventListener('mouseenter', function() {
+                this.classList.add('animate__animated', 'animate__pulse');
+                setTimeout(() => {
+                    this.classList.remove('animate__animated', 'animate__pulse');
+                }, 1000);
+            });
+        });
+        
+        // Add typewriter effect for fun
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+        
+        // Initialize typewriter on subtitle
+        setTimeout(() => {
+            const subtitle = document.querySelector('.brand-subtitle');
+            const originalText = subtitle.textContent;
+            typeWriter(subtitle, originalText, 50);
+        }, 1000);
+    </script>
+</body>
+</html>
