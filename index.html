@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productyl cPanel - Dashboard</title>
+    <title>My Dashboard - Productyl cPanel</title>
     
     <!-- Bootstrap 5 Dark -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
@@ -64,6 +64,11 @@
             height: 10px;
             border-radius: 5px;
         }
+        
+        .server-actions .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body>
@@ -91,8 +96,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-cog"></i> Settings
+                        <a class="nav-link" href="#" onclick="showApiKey()">
+                            <i class="fas fa-key"></i> API Key
                         </a>
                     </li>
                 </ul>
@@ -103,11 +108,14 @@
                             <i class="fas fa-user-circle me-1"></i> <span id="usernameDisplay">User</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user me-2"></i> Profile
+                            <div class="dropdown-header">
+                                <small>Package: <span id="userPackageBadge" class="badge bg-primary">Basic</span></small>
+                            </div>
+                            <a class="dropdown-item" href="#" onclick="showProfile()">
+                                <i class="fas fa-user me-2"></i> My Profile
                             </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-key me-2"></i> API Keys
+                            <a class="dropdown-item" href="#" onclick="showApiKey()">
+                                <i class="fas fa-key me-2"></i> API Key
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="login.html" onclick="logout()">
@@ -122,15 +130,20 @@
 
     <!-- Main Content -->
     <main class="container py-4">
-        <!-- Flash Message -->
-        <div id="flashMessage" class="alert alert-dismissible fade" role="alert">
-            <span id="flashText"></span>
-            <button type="button" class="btn-close" onclick="hideFlash()"></button>
+        <!-- Welcome Message -->
+        <div class="alert alert-info mb-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-2x me-3"></i>
+                <div>
+                    <h5 class="mb-1">Welcome, <span id="welcomeUsername">User</span>!</h5>
+                    <p class="mb-0">Manage your servers with 1-click creation. Need help? Contact your administrator.</p>
+                </div>
+            </div>
         </div>
 
         <!-- Stats Cards -->
         <div class="row mb-4" id="statsCards">
-            <!-- Stats akan diisi oleh JavaScript -->
+            <!-- Stats will be loaded by JavaScript -->
         </div>
 
         <!-- RAM Usage -->
@@ -154,15 +167,15 @@
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4>
-                        <i class="fas fa-bolt me-2 text-warning"></i>1-Click Server Creation
+                        <i class="fas fa-bolt me-2 text-warning"></i>Quick Server Creation
                     </h4>
                     <a href="create.html" class="btn btn-primary">
-                        <i class="fas fa-plus-circle me-2"></i>Create New Server
+                        <i class="fas fa-plus-circle me-2"></i>Create Custom Server
                     </a>
                 </div>
                 
                 <div class="row g-3" id="quickActions">
-                    <!-- Quick actions akan diisi oleh JavaScript -->
+                    <!-- Quick actions will be loaded by JavaScript -->
                 </div>
             </div>
         </div>
@@ -170,10 +183,23 @@
         <!-- Server List -->
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0">
-                    <i class="fas fa-list me-2"></i>Your Servers
-                    <span id="serverCount" class="badge bg-primary ms-2">0</span>
-                </h4>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list me-2"></i>My Servers
+                        <span id="serverCount" class="badge bg-primary ms-2">0</span>
+                    </h4>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary me-2" onclick="refreshServers()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="startAllServers()">
+                            <i class="fas fa-play"></i> Start All
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="stopAllServers()">
+                            <i class="fas fa-stop"></i> Stop All
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div id="noServers" class="text-center py-5">
@@ -190,21 +216,162 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Status</th>
-                                <th>RAM</th>
                                 <th>Type</th>
+                                <th>Status</th>
+                                <th>Resources</th>
                                 <th>Created</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="serversList">
-                            <!-- Servers akan diisi oleh JavaScript -->
+                            <!-- Servers will be loaded by JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        <!-- Package Info Card -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="mb-3">
+                    <i class="fas fa-box me-2"></i>Your Package Details
+                </h5>
+                <div class="row" id="packageDetails">
+                    <!-- Package details will be loaded by JavaScript -->
+                </div>
+            </div>
+        </div>
     </main>
+
+    <!-- API Key Modal -->
+    <div class="modal fade" id="apiKeyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>Your API Key
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Keep this key secret! It provides full access to your account.
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="apiKeyValue" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyApiKey()">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted">Use this key to authenticate with the Productyl API</small>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning" onclick="generateNewApiKey()">
+                        <i class="fas fa-sync-alt me-1"></i> Generate New Key
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="bg-primary bg-opacity-25 rounded-circle d-inline-flex p-4 mb-3">
+                            <i class="fas fa-user fa-3x text-primary"></i>
+                        </div>
+                        <h4 id="profileUsername">Username</h4>
+                        <p class="text-muted" id="profileEmail">email@example.com</p>
+                    </div>
+                    
+                    <div class="card bg-dark border-secondary mb-3">
+                        <div class="card-body">
+                            <h6 class="mb-3">Account Details</h6>
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted">User ID</small>
+                                    <div id="profileUserId" class="fw-bold">-</div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted">Account Created</small>
+                                    <div id="profileCreated" class="fw-bold">-</div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted">Status</small>
+                                    <div><span id="profileStatus" class="badge bg-success">Active</span></div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted">Last Login</small>
+                                    <div id="profileLastLogin" class="fw-bold">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Need to update your information? Contact your administrator.
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="changePassword()">
+                        <i class="fas fa-lock me-1"></i> Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="fas fa-lock me-2"></i>Change Password
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required minlength="8">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            You will be logged out after changing your password.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitPasswordChange()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer mt-auto py-3">
@@ -216,7 +383,9 @@
                     </span>
                 </div>
                 <div class="col-md-6 text-end">
-                    <span id="footerInfo" class="text-muted">Loading...</span>
+                    <span id="footerInfo" class="text-muted">
+                        <i class="fas fa-user-shield me-1"></i> Admin Managed System
+                    </span>
                 </div>
             </div>
         </div>
@@ -226,7 +395,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- App JS -->
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/encryption.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/servers.js"></script>
     
@@ -238,32 +407,512 @@
                 return;
             }
             
-            // Load user data
+            // Load dashboard
             loadDashboard();
             
             // Auto refresh every 30 seconds
             setInterval(loadDashboard, 30000);
+            
+            // Set last login time
+            setLastLogin();
         });
+        
+        function loadDashboard() {
+            const user = getCurrentUser();
+            if (!user) {
+                logout();
+                return;
+            }
+            
+            // Update user info
+            document.getElementById('usernameDisplay').textContent = user.username;
+            document.getElementById('welcomeUsername').textContent = user.username;
+            
+            // Load stats
+            loadStats(user);
+            
+            // Load servers
+            loadServers();
+            
+            // Load quick actions
+            loadQuickActions();
+            
+            // Load package info
+            loadPackageInfo(user);
+        }
+        
+        function loadStats(user) {
+            const servers = getUserServers();
+            const packages = getRamPackages();
+            const packageInfo = packages[user.package_id] || packages[1];
+            
+            const statsCards = document.getElementById('statsCards');
+            
+            statsCards.innerHTML = `
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-25 p-3 rounded-circle me-3">
+                                    <i class="fas fa-server fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">${servers.length}</h5>
+                                    <small class="text-muted">Active Servers</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-25 p-3 rounded-circle me-3">
+                                    <i class="fas fa-memory fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">${user.ram_used || 0}MB</h5>
+                                    <small class="text-muted">RAM Used</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-25 p-3 rounded-circle me-3">
+                                    <i class="fas fa-chart-line fa-2x text-warning"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">${user.ram_limit === 0 ? 'Unlimited' : user.ram_limit + 'MB'}</h5>
+                                    <small class="text-muted">RAM Limit</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info bg-opacity-25 p-3 rounded-circle me-3">
+                                    <i class="fas fa-crown fa-2x text-info"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">${packageInfo.name}</h5>
+                                    <small class="text-muted">Package</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update RAM usage
+            const ramUsed = user.ram_used || 0;
+            const ramLimit = user.ram_limit || 1024;
+            const ramPercentage = ramLimit > 0 ? Math.min(100, (ramUsed / ramLimit) * 100) : 0;
+            
+            document.getElementById('ramUsageText').textContent = 
+                `${ramUsed}MB / ${ramLimit === 0 ? 'Unlimited' : ramLimit + 'MB'}`;
+            
+            const ramProgress = document.getElementById('ramProgress');
+            ramProgress.style.width = `${ramPercentage}%`;
+            
+            // Set progress bar color
+            if (ramPercentage > 90) {
+                ramProgress.className = 'progress-bar bg-danger';
+            } else if (ramPercentage > 70) {
+                ramProgress.className = 'progress-bar bg-warning';
+            } else {
+                ramProgress.className = 'progress-bar bg-success';
+            }
+            
+            // Update available RAM text
+            const availableText = document.getElementById('ramAvailableText');
+            if (ramLimit === 0) {
+                availableText.textContent = 'Unlimited RAM available for new servers';
+            } else {
+                const availableRam = ramLimit - ramUsed;
+                availableText.textContent = `${availableRam}MB available for new servers`;
+            }
+        }
+        
+        function loadServers() {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            const servers = getUserServers();
+            const serverCount = document.getElementById('serverCount');
+            const noServers = document.getElementById('noServers');
+            const serversTable = document.getElementById('serversTable');
+            const serversList = document.getElementById('serversList');
+            
+            serverCount.textContent = servers.length;
+            
+            if (servers.length === 0) {
+                noServers.classList.remove('d-none');
+                serversTable.classList.add('d-none');
+                return;
+            }
+            
+            noServers.classList.add('d-none');
+            serversTable.classList.remove('d-none');
+            
+            // Server eggs mapping
+            const eggNames = {
+                1: 'Minecraft',
+                2: 'Node.js',
+                3: 'Python',
+                4: 'PHP',
+                5: 'CS:GO',
+                6: 'Discord Bot',
+                7: 'WordPress',
+                8: 'MySQL'
+            };
+            
+            const eggIcons = {
+                1: 'fas fa-cube',
+                2: 'fab fa-node-js',
+                3: 'fab fa-python',
+                4: 'fab fa-php',
+                5: 'fas fa-gamepad',
+                6: 'fab fa-discord',
+                7: 'fab fa-wordpress',
+                8: 'fas fa-database'
+            };
+            
+            serversList.innerHTML = servers.map(server => {
+                const statusClass = `status-${server.status}`;
+                const statusBadge = server.status === 'running' ? 'bg-success' : 
+                                  server.status === 'stopped' ? 'bg-danger' : 
+                                  server.status === 'creating' ? 'bg-warning' : 'bg-secondary';
+                
+                const eggName = eggNames[server.egg_id] || 'Unknown';
+                const eggIcon = eggIcons[server.egg_id] || 'fas fa-server';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="${eggIcon} text-primary me-2"></i>
+                                <div>
+                                    <strong>${server.name}</strong>
+                                    <small class="d-block text-muted">ID: ${server.id}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${eggName}</td>
+                        <td>
+                            <span class="badge ${statusBadge}">
+                                ${server.status.charAt(0).toUpperCase() + server.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <div>
+                                <small><i class="fas fa-memory me-1"></i> ${server.memory / 1024} GB RAM</small>
+                                <small class="d-block"><i class="fas fa-hdd me-1"></i> ${server.disk / 1024} GB Disk</small>
+                            </div>
+                        </td>
+                        <td>
+                            ${new Date(server.created_at).toLocaleDateString()}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm server-actions">
+                                <button class="btn btn-outline-primary" onclick="manageServer(${server.id})" 
+                                        title="Manage">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                ${server.status === 'running' ? 
+                                    `<button class="btn btn-outline-warning" onclick="stopServer(${server.id})" 
+                                            title="Stop">
+                                        <i class="fas fa-stop"></i>
+                                    </button>` :
+                                    `<button class="btn btn-outline-success" onclick="startServer(${server.id})" 
+                                            title="Start">
+                                        <i class="fas fa-play"></i>
+                                    </button>`
+                                }
+                                <button class="btn btn-outline-info" onclick="restartServer(${server.id})" 
+                                        title="Restart">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" 
+                                        onclick="deleteServerPrompt(${server.id}, '${server.name}')"
+                                        title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function loadQuickActions() {
+            const quickActions = document.getElementById('quickActions');
+            
+            const actions = [
+                { egg: 1, icon: 'fas fa-cube', name: 'Minecraft', color: 'text-success', desc: '30 seconds setup' },
+                { egg: 2, icon: 'fab fa-node-js', name: 'Node.js', color: 'text-success', desc: 'Perfect for apps' },
+                { egg: 5, icon: 'fas fa-gamepad', name: 'CS:GO', color: 'text-danger', desc: 'Game server ready' },
+                { egg: 6, icon: 'fab fa-discord', name: 'Discord Bot', color: 'text-info', desc: 'Bot hosting' }
+            ];
+            
+            quickActions.innerHTML = actions.map(action => `
+                <div class="col-md-3 col-6">
+                    <a href="create.html?egg=${action.egg}" 
+                       class="card text-decoration-none text-center p-4 h-100">
+                        <i class="${action.icon} fa-3x mb-3 ${action.color}"></i>
+                        <h5>${action.name}</h5>
+                        <small class="text-muted">${action.desc}</small>
+                        <div class="mt-2">
+                            <small class="text-primary">1-Click Install</small>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+        }
+        
+        function loadPackageInfo(user) {
+            const packages = getRamPackages();
+            const packageInfo = packages[user.package_id] || packages[1];
+            
+            const packageDetails = document.getElementById('packageDetails');
+            const packageBadge = document.getElementById('userPackageBadge');
+            
+            packageBadge.textContent = packageInfo.name;
+            
+            packageDetails.innerHTML = `
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <small class="text-muted">Package Name</small>
+                        <div class="fw-bold">${packageInfo.name}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">RAM Allocation</small>
+                        <div class="fw-bold">${packageInfo.unlimited ? 'Unlimited' : (packageInfo.ram / 1024) + ' GB'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Max Servers</small>
+                        <div class="fw-bold">${packageInfo.max_servers}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <small class="text-muted">Monthly Price</small>
+                        <div class="fw-bold">$${packageInfo.price}/month</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Your Limit</small>
+                        <div class="fw-bold">${user.ram_limit === 0 ? 'Unlimited' : user.ram_limit + ' MB'}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Servers Created</small>
+                        <div class="fw-bold">${getUserServers().length} / ${user.max_servers}</div>
+                    </div>
+                </div>
+            `;
+        }
         
         function logout() {
             localStorage.removeItem('currentUser');
             window.location.href = 'login.html';
         }
         
-        function hideFlash() {
-            document.getElementById('flashMessage').classList.remove('show');
+        function setLastLogin() {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            const lastLogin = new Date().toLocaleString();
+            localStorage.setItem(`last_login_${user.id}`, lastLogin);
         }
         
-        function showFlash(message, type = 'success') {
-            const flash = document.getElementById('flashMessage');
-            const text = document.getElementById('flashText');
+        function showApiKey() {
+            const user = getCurrentUser();
+            if (!user) return;
             
-            flash.className = `alert alert-${type} alert-dismissible fade show`;
-            text.textContent = message;
+            document.getElementById('apiKeyValue').value = user.api_key || 'No API key assigned';
             
-            // Auto hide after 5 seconds
-            setTimeout(hideFlash, 5000);
+            const modal = new bootstrap.Modal(document.getElementById('apiKeyModal'));
+            modal.show();
+        }
+        
+        function copyApiKey() {
+            const apiKeyInput = document.getElementById('apiKeyValue');
+            apiKeyInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const originalText = apiKeyInput.value;
+            apiKeyInput.value = 'Copied to clipboard!';
+            setTimeout(() => {
+                apiKeyInput.value = originalText;
+            }, 2000);
+        }
+        
+        function generateNewApiKey() {
+            if (!confirm('Generate new API key? The old key will become invalid.')) {
+                return;
+            }
+            
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            const newApiKey = PasswordEncryption.generateApiKey();
+            
+            // In real app, this would call an API to update
+            alert(`New API Key: ${newApiKey}\n\nSave this key! It won't be shown again.`);
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('apiKeyModal')).hide();
+        }
+        
+        function showProfile() {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            document.getElementById('profileUsername').textContent = user.username;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileUserId').textContent = '#' + user.id;
+            document.getElementById('profileCreated').textContent = new Date(user.created_at).toLocaleDateString();
+            document.getElementById('profileStatus').textContent = user.status || 'Active';
+            document.getElementById('profileLastLogin').textContent = localStorage.getItem(`last_login_${user.id}`) || 'Just now';
+            
+            const modal = new bootstrap.Modal(document.getElementById('profileModal'));
+            modal.show();
+        }
+        
+        function changePassword() {
+            bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+            
+            const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+            modal.show();
+        }
+        
+        async function submitPasswordChange() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                alert('New password must be at least 8 characters!');
+                return;
+            }
+            
+            // In real app, this would verify current password with backend
+            alert('Password change requested. Please contact your administrator to change your password.');
+            
+            // Clear form and close modal
+            document.getElementById('changePasswordForm').reset();
+            bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+        }
+        
+        function refreshServers() {
+            loadDashboard();
+            alert('Servers refreshed!');
+        }
+        
+        function startAllServers() {
+            if (confirm('Start all servers?')) {
+                const servers = getUserServers();
+                servers.forEach(server => {
+                    if (server.status !== 'running') {
+                        server.status = 'running';
+                    }
+                });
+                
+                const user = getCurrentUser();
+                localStorage.setItem(`servers_${user.id}`, JSON.stringify(servers));
+                
+                loadServers();
+                alert('All servers started!');
+            }
+        }
+        
+        function stopAllServers() {
+            if (confirm('Stop all servers? This will stop all running servers.')) {
+                const servers = getUserServers();
+                servers.forEach(server => {
+                    if (server.status === 'running') {
+                        server.status = 'stopped';
+                    }
+                });
+                
+                const user = getCurrentUser();
+                localStorage.setItem(`servers_${user.id}`, JSON.stringify(servers));
+                
+                loadServers();
+                alert('All servers stopped!');
+            }
+        }
+        
+        function manageServer(serverId) {
+            alert('Server management panel would open here in real implementation.');
+        }
+        
+        function startServer(serverId) {
+            const user = getCurrentUser();
+            const servers = getUserServers();
+            const serverIndex = servers.findIndex(s => s.id == serverId);
+            
+            if (serverIndex !== -1) {
+                servers[serverIndex].status = 'running';
+                localStorage.setItem(`servers_${user.id}`, JSON.stringify(servers));
+                loadServers();
+            }
+        }
+        
+        function stopServer(serverId) {
+            const user = getCurrentUser();
+            const servers = getUserServers();
+            const serverIndex = servers.findIndex(s => s.id == serverId);
+            
+            if (serverIndex !== -1) {
+                servers[serverIndex].status = 'stopped';
+                localStorage.setItem(`servers_${user.id}`, JSON.stringify(servers));
+                loadServers();
+            }
+        }
+        
+        function restartServer(serverId) {
+            const user = getCurrentUser();
+            const servers = getUserServers();
+            const serverIndex = servers.findIndex(s => s.id == serverId);
+            
+            if (serverIndex !== -1) {
+                servers[serverIndex].status = 'restarting';
+                localStorage.setItem(`servers_${user.id}`, JSON.stringify(servers));
+                
+                // Simulate restart
+                setTimeout(() => {
+                    servers[serverIndex].status = 'running';
+                    localStorage.setItem(`servers_${user.id}`, JSON.stringify(servers));
+                    loadServers();
+                }, 3000);
+                
+                alert('Server restarting...');
+                loadServers();
+            }
+        }
+        
+        function deleteServerPrompt(serverId, serverName) {
+            if (confirm(`Delete server "${serverName}"?\n\nThis action cannot be undone!`)) {
+                deleteServer(serverId);
+                loadDashboard();
+            }
         }
     </script>
 </body>
-</html>
+                            </html>
