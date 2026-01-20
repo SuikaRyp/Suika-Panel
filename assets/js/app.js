@@ -2,59 +2,114 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Productyl cPanel loaded');
     
-    // Initialize mock data if needed
-    initializeMockData();
+    // Initialize admin account
+    initializeAdminAccount();
+    
+    // Initialize demo data if needed
+    initializeDemoData();
     
     // Start status simulation
     setInterval(simulateServerStatus, 30000);
 });
 
-function initializeMockData() {
-    // Initialize default servers for demo users if none exist
-    const adminId = 1;
-    const userId = 2;
+function initializeDemoData() {
+    // Check if demo users exist
+    const users = getAllUsers();
     
-    // Check if admin has servers
-    if (!localStorage.getItem(`servers_${adminId}`)) {
-        const adminServers = [
+    if (users.length === 0) {
+        // Create some demo users
+        const demoUsers = [
             {
-                id: 1001,
-                name: 'admin-minecraft',
-                egg_id: 1,
-                memory: 4096,
-                disk: 40960,
-                status: 'running',
-                created_at: '2024-01-15T10:30:00Z',
-                node: 'node-1'
+                username: 'john_doe',
+                email: 'john@example.com',
+                password: 'demo123',
+                package_id: 3,
+                ram_limit: 4096,
+                max_servers: 3
             },
             {
-                id: 1002,
-                name: 'admin-node-app',
-                egg_id: 2,
-                memory: 2048,
-                disk: 20480,
-                status: 'running',
-                created_at: '2024-01-20T14:45:00Z',
-                node: 'node-1'
-            }
-        ];
-        localStorage.setItem(`servers_${adminId}`, JSON.stringify(adminServers));
-    }
-    
-    // Check if user has servers
-    if (!localStorage.getItem(`servers_${userId}`)) {
-        const userServers = [
+                username: 'jane_smith',
+                email: 'jane@example.com',
+                password: 'demo123',
+                package_id: 2,
+                ram_limit: 2048,
+                max_servers: 2
+            },
             {
-                id: 2001,
-                name: 'my-minecraft-server',
-                egg_id: 1,
-                memory: 1024,
-                disk: 10240,
-                status: 'running',
-                created_at: '2024-02-01T09:15:00Z',
-                node: 'node-2'
+                username: 'premium_user',
+                email: 'premium@example.com',
+                password: 'demo123',
+                package_id: 6,
+                ram_limit: 10240,
+                max_servers: 10
             }
         ];
-        localStorage.setItem(`servers_${userId}`, JSON.stringify(userServers));
+        
+        // Create demo users
+        demoUsers.forEach(async (userData, index) => {
+            setTimeout(async () => {
+                await createUser(userData);
+            }, index * 100);
+        });
+        
+        console.log('Demo users created');
+    }
+}
+
+// Simulate server status updates
+function simulateServerStatus() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    // If admin, update all users' servers
+    if (currentUser.is_admin) {
+        const users = getAllUsers();
+        users.forEach(user => {
+            updateUserServersStatus(user.id);
+        });
+    } else {
+        // Update current user's servers
+        updateUserServersStatus(currentUser.id);
+    }
+}
+
+function updateUserServersStatus(userId) {
+    const servers = getUserServers(userId);
+    let needsUpdate = false;
+    
+    servers.forEach(server => {
+        if (server.status === 'creating') {
+            // Simulate server becoming ready
+            if (Math.random() > 0.7) {
+                server.status = 'running';
+                needsUpdate = true;
+            }
+        } else if (server.status === 'running') {
+            // Randomly stop some servers
+            if (Math.random() > 0.98) {
+                server.status = 'stopped';
+                needsUpdate = true;
+            }
+        } else if (server.status === 'stopped') {
+            // Randomly start stopped servers
+            if (Math.random() > 0.95) {
+                server.status = 'running';
+                needsUpdate = true;
+            }
+        }
+    });
+    
+    if (needsUpdate) {
+        localStorage.setItem(`servers_${userId}`, JSON.stringify(servers));
+        
+        // Update RAM usage
+        updateUserRamUsage(userId);
+        
+        // If on dashboard, refresh
+        if (window.location.pathname.includes('index.html') || 
+            window.location.pathname.includes('admin/')) {
+            loadDashboard?.();
+            loadAdminDashboard?.();
+        }
     }
 }
