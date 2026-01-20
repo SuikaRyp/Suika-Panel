@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productyl cPanel - Create Server</title>
+    
+    <!-- Bootstrap 5 Dark -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+        
+        .package-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary) !important;
+        }
+        
+        .egg-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .egg-card:hover, .egg-card.selected {
+            border-color: var(--primary) !important;
+            background: rgba(78, 84, 200, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-server me-2"></i>Productyl cPanel
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        <!-- Step Indicators -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-center">
+                        <div class="step-number bg-primary text-white">1</div>
+                        <div class="mt-2 fw-bold">Select Package</div>
+                    </div>
+                    <div class="flex-grow-1 mx-3" style="height: 2px; background: var(--primary);"></div>
+                    <div class="text-center">
+                        <div class="step-number bg-primary text-white">2</div>
+                        <div class="mt-2 fw-bold">Configure</div>
+                    </div>
+                    <div class="flex-grow-1 mx-3" style="height: 2px; background: var(--primary);"></div>
+                    <div class="text-center">
+                        <div class="step-number bg-secondary text-white">3</div>
+                        <div class="mt-2">Deploy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RAM Packages -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <h3 class="mb-4">
+                    <i class="fas fa-boxes me-2"></i>Select RAM Package
+                </h3>
+                
+                <div class="row g-3" id="packagesContainer">
+                    <!-- Packages will be loaded by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Configuration -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">
+                            <i class="fas fa-sliders-h me-2"></i>Server Configuration
+                        </h4>
+                        
+                        <form id="serverForm">
+                            <div class="row g-3">
+                                <!-- Server Name -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-server me-1"></i> Server Name
+                                    </label>
+                                    <input type="text" class="form-control" 
+                                           id="serverName" 
+                                           placeholder="my-awesome-server" 
+                                           required>
+                                    <small class="text-muted">Only letters, numbers, and dashes</small>
+                                </div>
+                                
+                                <!-- RAM Selection -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-memory me-1"></i> RAM Allocation
+                                    </label>
+                                    <select class="form-select" id="ramSelect" required>
+                                        <option value="1024">1 GB - $5/month</option>
+                                        <option value="2048">2 GB - $10/month</option>
+                                        <option value="4096">4 GB - $20/month</option>
+                                        <option value="6144">6 GB - $30/month</option>
+                                        <option value="8192">8 GB - $40/month</option>
+                                        <option value="10240">10 GB - $50/month</option>
+                                        <option value="0" id="unlimitedOption" class="text-warning">
+                                            UNLIMITED - $100/month (Admin Only)
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Server Type -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold mb-3">
+                                        <i class="fas fa-egg me-1"></i> Server Type
+                                    </label>
+                                    <div class="row g-2" id="eggsContainer">
+                                        <!-- Eggs will be loaded by JavaScript -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Features -->
+                                <div class="col-12 mt-4">
+                                    <div class="card bg-dark border-success">
+                                        <div class="card-body">
+                                            <h5 class="mb-3">
+                                                <i class="fas fa-check-circle text-success me-2"></i>Included Features
+                                            </h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <ul class="list-unstyled">
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> Full Root Access
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> 24/7 Uptime Monitoring
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> DDoS Protection
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <ul class="list-unstyled">
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> Instant Setup
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> Daily Backups
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> 99.9% SLA
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Create Button -->
+                                <div class="col-12 mt-4">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg py-3">
+                                            <i class="fas fa-rocket me-2"></i>CREATE SERVER NOW
+                                        </button>
+                                        <small class="text-center text-muted mt-2">
+                                            <i class="fas fa-bolt me-1"></i>Server will be ready in 30-60 seconds
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Current Usage -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5>
+                            <i class="fas fa-chart-bar me-2"></i>Your Current Usage
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>RAM Usage</span>
+                                        <span id="currentRamUsage">0MB / 0MB</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div id="ramProgressBar" class="progress-bar bg-success" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>Available RAM</h6>
+                                        <h3 id="availableRam" class="text-success">0MB</h3>
+                                    </div>
+                                    <div>
+                                        <h6>Can Create</h6>
+                                        <h3 id="canCreateServers" class="text-primary">0 more</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- App JS -->
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/servers.js"></script>
+    
+    <script>
+        // Configuration
+        const RAM_PACKAGES = [
+            { id: 1, name: 'Basic 1GB', ram: 1024, price: 5, max_servers: 1 },
+            { id: 2, name: 'Starter 2GB', ram: 2048, price: 10, max_servers: 2 },
+            { id: 3, name: 'Standard 4GB', ram: 4096, price: 20, max_servers: 3 },
+            { id: 4, name: 'Advanced 6GB', ram: 6144, price: 30, max_servers: 5 },
+            { id: 5, name: 'Pro 8GB', ram: 8192, price: 40, max_servers: 8 },
+            { id: 6, name: 'Enterprise 10GB', ram: 10240, price: 50, max_servers: 10 },
+            { id: 7, name: 'UNLIMITED', ram: 0, price: 100, max_servers: 999, unlimited: true }
+        ];
+        
+        const SERVER_EGGS = [
+            { id: 1, name: 'Minecraft', icon: 'fas fa-cube', color: 'text-success' },
+            { id: 2, name: 'Node.js', icon: 'fab fa-node-js', color: 'text-success' },
+            { id: 3, name: 'Python', icon: 'fab fa-python', color: 'text-info' },
+            { id: 4, name: 'PHP Web', icon: 'fab fa-php', color: 'text-primary' },
+            { id: 5, name: 'CS:GO', icon: 'fas fa-gamepad', color: 'text-danger' },
+            { id: 6, name: 'Discord Bot', icon: 'fab fa-discord', color: 'text-info' },
+            { id: 7, name: 'WordPress', icon: 'fab fa-wordpress', color: 'text-primary' },
+            { id: 8, name: 'MySQL', icon: 'fas fa-database', color: 'text-warning' }
+        ];
+        
+        let selectedPackage = 1;
+        let selectedEgg = 1;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login
+            if (!isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Load packages
+            loadPackages();
+            
+            // Load eggs
+            loadEggs();
+            
+            // Load user stats
+            loadUserStats();
+            
+            // Handle form submission
+            document.getElementById('serverForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createServer();
+            });
+            
+            // Update unlimited option visibility
+            updateUnlimitedOption();
+        });
+        
+        function loadPackages() {
+            const container = document.getElementById('packagesContainer');
+            const user = getCurrentUser();
+            const isAdmin = user?.is_admin || false;
+            
+            container.innerHTML = RAM_PACKAGES
+                .filter(pkg => pkg.id !== 7 || isAdmin) // Hide unlimited for non-admins
+                .map(pkg => `
+                    <div class="col-md-4">
+                        <div class="card package-card h-100 ${pkg.id === 7 ? 'border-warning' : ''}"
+                             onclick="selectPackage(${pkg.id})"
+                             id="package-${pkg.id}">
+                            <div class="card-body text-center p-4">
+                                <h5 class="mb-3">
+                                    ${pkg.id === 7 ? 
+                                        '<i class="fas fa-infinity text-warning fa-2x"></i>' : 
+                                        `<i class="fas fa-memory text-primary fa-2x"></i>`
+                                    }
+                                </h5>
+                                <h4 class="mb-3">${pkg.name}</h4>
+                                <h2 class="mb-3">
+                                    ${pkg.unlimited ? 
+                                        '<span class="text-warning">UNLIMITED</span>' : 
+                                        `${pkg.ram / 1024} GB`
+                                    }
+                                </h2>
+                                <div class="mb-3">
+                                    <span class="badge bg-primary">$${pkg.price}/month</span>
+                                    <span class="badge bg-success ms-1">${pkg.max_servers} Servers</span>
+                                </div>
+                                <small class="text-muted">
+                                    ${pkg.unlimited ? 
+                                        'Unlimited resources for power users' : 
+                                        `Perfect for ${pkg.ram / 1024}GB applications`
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            
+            // Select first package by default
+            selectPackage(isAdmin ? 1 : 1);
+        }
+        
+        function loadEggs() {
+            const container = document.getElementById('eggsContainer');
+            
+            container.innerHTML = SERVER_EGGS.map(egg => `
+                <div class="col-md-3 col-6">
+                    <div class="card egg-card h-100"
+                         onclick="selectEgg(${egg.id})"
+                         id="egg-${egg.id}">
+                        <div class="card-body text-center p-3">
+                            <i class="${egg.icon} fa-2x mb-3 ${egg.color}"></i>
+                            <h6>${egg.name}</h6>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Select first egg by default
+            selectEgg(1);
+        }
+        
+        function selectPackage(packageId) {
+            selectedPackage = packageId;
+            const pkg = RAM_PACKAGES.find(p => p.id === packageId);
+            
+            // Update UI
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('border-primary', 'border-2');
+            });
+            document.getElementById(`package-${packageId}`).classList.add('border-primary', 'border-2');
+            
+            // Update RAM select
+            document.getElementById('ramSelect').value = pkg.ram;
+        }
+        
+        function selectEgg(eggId) {
+            selectedEgg = eggId;
+            
+            // Update UI
+            document.querySelectorAll('.egg-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(`egg-${eggId}`).classList.add('selected');
+        }
+        
+        function loadUserStats() {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            const servers = getUserServers();
+            const ramUsed = servers.reduce((sum, server) => sum + server.memory, 0);
+            const ramLimit = user.ram_limit || 1024;
+            const maxServers = user.max_servers || 1;
+            
+            // Update RAM usage
+            const ramPercentage = ramLimit > 0 ? Math.min(100, (ramUsed / ramLimit) * 100) : 0;
+            document.getElementById('currentRamUsage').textContent = 
+                `${ramUsed}MB / ${ramLimit === 0 ? 'Unlimited' : ramLimit + 'MB'}`;
+            document.getElementById('ramProgressBar').style.width = `${ramPercentage}%`;
+            
+            // Update available RAM
+            const availableRam = ramLimit === 0 ? 'Unlimited' : (ramLimit - ramUsed) + 'MB';
+            document.getElementById('availableRam').textContent = availableRam;
+            
+            // Update server count
+            const canCreate = Math.max(0, maxServers - servers.length);
+            document.getElementById('canCreateServers').textContent = `${canCreate} more`;
+        }
+        
+        function updateUnlimitedOption() {
+            const user = getCurrentUser();
+            const unlimitedOption = document.getElementById('unlimitedOption');
+            
+            if (user?.is_admin) {
+                unlimitedOption.style.display = 'block';
+            } else {
+                unlimitedOption.style.display = 'none';
+                // If unlimited is selected but user is not admin, select 1GB
+                if (document.getElementById('ramSelect').value === '0') {
+                    document.getElementById('ramSelect').value = '1024';
+                }
+            }
+        }
+        
+        function createServer() {
+            const user = getCurrentUser();
+            if (!user) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const serverName = document.getElementById('serverName').value.trim();
+            const ram = parseInt(document.getElementById('ramSelect').value);
+            
+            if (!serverName) {
+                alert('Please enter a server name!');
+                return;
+            }
+            
+            // Check RAM limit (unless unlimited)
+            if (user.ram_limit > 0) {
+                const servers = getUserServers();
+                const ramUsed = servers.reduce((sum, server) => sum + server.memory, 0);
+                
+                if (ramUsed + ram > user.ram_limit) {
+                    alert(`RAM limit exceeded! Available: ${user.ram_limit - ramUsed}MB, Needed: ${ram}MB`);
+                    return;
+                }
+            }
+            
+            // Check server count limit
+            const servers = getUserServers();
+            const maxServers = user.max_servers || 1;
+            if (servers.length >= maxServers) {
+                alert(`Maximum server limit reached (${maxServers} servers)!`);
+                return;
+            }
+            
+            // Create server object
+            const newServer = {
+                id: Date.now(),
+                name: serverName,
+                egg_id: selectedEgg,
+                memory: ram,
+                disk: ram * 10, // 10x RAM for disk
+                status: 'creating',
+                created_at: new Date().toISOString(),
+                node: 'node-1'
+            };
+            
+            // Add to localStorage
+            addUserServer(newServer);
+            
+            // Show success message
+            alert(`Server "${serverName}" is being created! Redirecting to dashboard...`);
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
