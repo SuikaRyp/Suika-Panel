@@ -68,6 +68,11 @@
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             border: none;
         }
+        
+        .badge-free {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -152,14 +157,14 @@
                                         <i class="fas fa-memory me-1"></i> RAM Allocation
                                     </label>
                                     <select class="form-select" id="ramSelect" required>
-                                        <option value="1024">1 GB - $5/month</option>
-                                        <option value="2048">2 GB - $10/month</option>
-                                        <option value="4096">4 GB - $20/month</option>
-                                        <option value="6144">6 GB - $30/month</option>
-                                        <option value="8192">8 GB - $40/month</option>
-                                        <option value="10240">10 GB - $50/month</option>
+                                        <option value="1024">1 GB - Free Plan</option>
+                                        <option value="2048">2 GB - Free Plan</option>
+                                        <option value="4096">4 GB - Free Plan</option>
+                                        <option value="6144">6 GB - Free Plan</option>
+                                        <option value="8192">8 GB - Free Plan</option>
+                                        <option value="10240">10 GB - Free Plan</option>
                                         <option value="0" id="unlimitedOption" class="text-warning">
-                                            UNLIMITED - $100/month (Admin Only)
+                                            UNLIMITED - Admin Plan
                                         </option>
                                     </select>
                                 </div>
@@ -193,6 +198,9 @@
                                                         <li class="mb-2">
                                                             <i class="fas fa-check text-success me-2"></i> DDoS Protection
                                                         </li>
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> Completely FREE
+                                                        </li>
                                                     </ul>
                                                 </div>
                                                 <div class="col-md-6">
@@ -206,6 +214,9 @@
                                                         <li class="mb-2">
                                                             <i class="fas fa-check text-success me-2"></i> 99.9% SLA
                                                         </li>
+                                                        <li class="mb-2">
+                                                            <i class="fas fa-check text-success me-2"></i> No Hidden Fees
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -217,7 +228,7 @@
                                 <div class="col-12 mt-4">
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary btn-lg py-3">
-                                            <i class="fas fa-rocket me-2"></i>CREATE SERVER NOW
+                                            <i class="fas fa-rocket me-2"></i>CREATE FREE SERVER
                                         </button>
                                         <small class="text-center text-muted mt-2">
                                             <i class="fas fa-bolt me-1"></i>Server will be ready in 30-60 seconds
@@ -276,13 +287,13 @@
     <script>
         // Configuration
         const RAM_PACKAGES = [
-            { id: 1, name: 'Basic 1GB', ram: 1024, price: 5, max_servers: 1 },
-            { id: 2, name: 'Starter 2GB', ram: 2048, price: 10, max_servers: 2 },
-            { id: 3, name: 'Standard 4GB', ram: 4096, price: 20, max_servers: 3 },
-            { id: 4, name: 'Advanced 6GB', ram: 6144, price: 30, max_servers: 5 },
-            { id: 5, name: 'Pro 8GB', ram: 8192, price: 40, max_servers: 8 },
-            { id: 6, name: 'Enterprise 10GB', ram: 10240, price: 50, max_servers: 10 },
-            { id: 7, name: 'UNLIMITED', ram: 0, price: 100, max_servers: 999, unlimited: true }
+            { id: 1, name: 'Basic 1GB', ram: 1024, max_servers: 1 },
+            { id: 2, name: 'Starter 2GB', ram: 2048, max_servers: 2 },
+            { id: 3, name: 'Standard 4GB', ram: 4096, max_servers: 3 },
+            { id: 4, name: 'Advanced 6GB', ram: 6144, max_servers: 5 },
+            { id: 5, name: 'Pro 8GB', ram: 8192, max_servers: 8 },
+            { id: 6, name: 'Enterprise 10GB', ram: 10240, max_servers: 10 },
+            { id: 7, name: 'UNLIMITED', ram: 0, max_servers: 999, unlimited: true }
         ];
         
         const SERVER_EGGS = [
@@ -352,13 +363,13 @@
                                     }
                                 </h2>
                                 <div class="mb-3">
-                                    <span class="badge bg-primary">$${pkg.price}/month</span>
+                                    <span class="badge badge-free">FREE</span>
                                     <span class="badge bg-success ms-1">${pkg.max_servers} Servers</span>
                                 </div>
                                 <small class="text-muted">
                                     ${pkg.unlimited ? 
-                                        'Unlimited resources for power users' : 
-                                        `Perfect for ${pkg.ram / 1024}GB applications`
+                                        'Unlimited resources for administrators' : 
+                                        `Completely free ${pkg.ram / 1024}GB plan`
                                     }
                                 </small>
                             </div>
@@ -381,6 +392,7 @@
                         <div class="card-body text-center p-3">
                             <i class="${egg.icon} fa-2x mb-3 ${egg.color}"></i>
                             <h6>${egg.name}</h6>
+                            <small class="text-success">FREE</small>
                         </div>
                     </div>
                 </div>
@@ -504,7 +516,7 @@
             addUserServer(newServer);
             
             // Show success message
-            alert(`Server "${serverName}" is being created! Redirecting to dashboard...`);
+            alert(`Free server "${serverName}" is being created! Redirecting to dashboard...`);
             
             // Redirect to dashboard
             setTimeout(() => {
